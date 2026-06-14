@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(npm install 2>&1)",
+      "PowerShell(npm run build 2>&1)",
+      "PowerShell(npm install --save-dev @types/uuid 2>&1)",
+      "PowerShell(npm run lint 2>&1)",
+      "PowerShell(npm install youtube-dl-exec 2>&1)",
+      "PowerShell(node -e \"const yt=require\\('youtube-dl-exec'\\); yt\\('', {version:true}\\).then\\(o=>console.log\\('OK',o\\)\\).catch\\(e=>console.log\\('ERR', String\\(e\\).slice\\(0,300\\)\\)\\)\")",
+      "PowerShell(npx tsc -p tsconfig.json --noEmit)",
+      "PowerShell(npx prettier \"src/utils/validator.ts\" | git --no-pager diff --no-index \"src/utils/validator.ts\" - 2>$null; if \\(-not $?\\) { npx prettier \"src/utils/validator.ts\" > \"$env:TEMP\\\\val.ts\"; Compare-Object \\(Get-Content \"src/utils/validator.ts\"\\) \\(Get-Content \"$env:TEMP\\\\val.ts\"\\) })"
+    ]
+  }
+}

@@ -1,0 +1,2 @@
+# Runtime temp directory (configured via TEMP_DIRECTORY, default ./temp).
+# Downloaded media is written here transiently and deleted after upload.

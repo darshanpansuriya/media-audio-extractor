@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment
+.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Temporary downloaded media
+temp/*
+!temp/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
