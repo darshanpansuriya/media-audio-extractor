@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Media Downloader</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="card">
+      <h1>Media Downloader</h1>
+      <p class="subtitle">Paste a link, pick a type, and download.</p>
+
+      <!-- Input form -->
+      <form id="form" autocomplete="off">
+        <input
+          id="url"
+          type="url"
+          placeholder="https://..."
+          required
+        />
+
+        <div class="types">
+          <label>
+            <input type="radio" name="type" value="video" checked />
+            Video
+          </label>
+          <label>
+            <input type="radio" name="type" value="audio" />
+            Audio
+          </label>
+        </div>
+
+        <div id="format-row" class="format-row hidden">
+          <label for="format">Audio format</label>
+          <select id="format">
+            <option value="opus">opus</option>
+            <option value="mp3">mp3</option>
+          </select>
+        </div>
+
+        <button id="submit" type="submit">Convert</button>
+      </form>
+
+      <!-- Loading state -->
+      <section id="loading" class="state hidden">
+        <div class="spinner"></div>
+        <div class="bar"><div class="bar-fill"></div></div>
+        <p id="loading-text">Starting…</p>
+      </section>
+
+      <!-- Error state -->
+      <section id="error" class="state error hidden">
+        <p id="error-text"></p>
+      </section>
+
+      <!-- Success state -->
+      <section id="success" class="state success hidden">
+        <p class="done">✓ Ready to download</p>
+        <a id="download" href="#" class="download-btn">Download</a>
+        <button id="reset" type="button" class="link-btn">Convert another</button>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,192 @@
+/* Basic, clean UI for the Media Downloader. */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f4f5f7;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: #1a1a1a;
+  padding: 16px;
+}
+
+.card {
+  background: #fff;
+  width: 100%;
+  max-width: 440px;
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+h1 {
+  margin: 0 0 4px;
+  font-size: 22px;
+}
+
+.subtitle {
+  margin: 0 0 24px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+input[type="url"],
+select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+input[type="url"]:focus,
+select:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.types {
+  display: flex;
+  gap: 20px;
+  font-size: 15px;
+}
+
+.types label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.format-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  color: #374151;
+}
+
+button#submit {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button#submit:hover {
+  background: #1d4ed8;
+}
+
+button#submit:disabled {
+  background: #93b4f3;
+  cursor: not-allowed;
+}
+
+/* Shared state blocks */
+.state {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Loading */
+.spinner {
+  width: 36px;
+  height: 36px;
+  margin: 0 auto 16px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.bar {
+  width: 100%;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  width: 0%;
+  background: #2563eb;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+#loading-text {
+  margin: 12px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* Error */
+.error p {
+  color: #b91c1c;
+  background: #fee2e2;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Success */
+.done {
+  color: #15803d;
+  font-weight: 600;
+  margin: 0 0 16px;
+}
+
+.download-btn {
+  display: inline-block;
+  width: 100%;
+  padding: 12px;
+  background: #15803d;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.download-btn:hover {
+  background: #166534;
+}
+
+.link-btn {
+  display: block;
+  margin: 16px auto 0;
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
+}

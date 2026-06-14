@@ -1,3 +1,4 @@
+import path from 'path';
 import express, { Application, Request, Response } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
@@ -24,6 +25,12 @@ export function createApp(): Application {
   app.use(express.json({ limit: '1mb' }));
   app.use(express.urlencoded({ extended: true }));
   app.use(morgan('combined'));
+
+  // ---- Static web UI ----
+  // Serves the simple downloader front-end (index.html, styles.css, app.js)
+  // at the root. Lives one level up from this file in both src/ (dev) and
+  // dist/ (build), so resolve relative to __dirname.
+  app.use(express.static(path.join(__dirname, '..', 'public')));
 
   // ---- API documentation (Swagger UI + raw OpenAPI JSON) ----
   app.get('/docs.json', (_req: Request, res: Response) => {
