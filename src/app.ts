@@ -20,7 +20,20 @@ export function createApp(): Application {
   const app = express();
 
   // ---- Security & infrastructure middleware ----
-  app.use(helmet());
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        // Drop only the default `upgrade-insecure-requests` directive. It
+        // rewrites every http:// asset request to https://, which breaks the
+        // front-end when the app is deployed behind a bare server IP:port with
+        // no TLS (assets silently fail to load). All other helmet defaults stay.
+        // Remove this override once HTTPS terminates in front of the app.
+        directives: {
+          upgradeInsecureRequests: null,
+        },
+      },
+    })
+  );
   app.use(cors());
   app.use(express.json({ limit: '1mb' }));
   app.use(express.urlencoded({ extended: true }));
@@ -47,6 +60,11 @@ export function createApp(): Application {
           scriptSrc: ["'self'", "'unsafe-inline'"],
           styleSrc: ["'self'", "'unsafe-inline'"],
           imgSrc: ["'self'", 'data:', 'https:'],
+          // Same fix as the global helmet config: helmet merges these with its
+          // defaults (useDefaults: true), which would otherwise re-add
+          // `upgrade-insecure-requests` and break Swagger's assets over plain
+          // HTTP. Drop it here too. Remove once HTTPS is in front.
+          upgradeInsecureRequests: null,
         },
       },
     }),
