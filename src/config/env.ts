@@ -26,6 +26,24 @@ export interface AppConfig {
    * Defaults to `opus`; set `DEFAULT_AUDIO_FORMAT=mp3` to flip it.
    */
   defaultAudioFormat: AudioFormat;
+  /**
+   * yt-dlp extraction tuning. Needed mainly to get past YouTube's
+   * "Sign in to confirm you're not a bot" wall on datacenter IPs.
+   */
+  ytdlp: {
+    /**
+     * Absolute path to a Netscape-format `cookies.txt` exported from a
+     * logged-in browser. When set, it is passed to yt-dlp as `--cookies`,
+     * which is the most reliable way past the bot check. Empty = no cookies.
+     */
+    cookiesFile?: string;
+    /**
+     * Optional yt-dlp `youtube:player_client` override (e.g. `web_safari`,
+     * `android`, `ios`, `tv`). Some clients dodge the bot wall when cookies
+     * aren't available. Empty = let yt-dlp choose.
+     */
+    playerClient?: string;
+  };
 }
 
 /**
@@ -82,6 +100,13 @@ const defaultAudioFormat = parseAudioFormat(
   optionalEnv('DEFAULT_AUDIO_FORMAT', 'opus')
 );
 
+// yt-dlp cookies file: optional, resolved to an absolute path when provided so
+// it works regardless of the process's working directory (e.g. under pm2).
+const rawCookiesFile = optionalEnv('YTDLP_COOKIES_FILE', '');
+const ytdlpCookiesFile = rawCookiesFile === '' ? undefined : path.resolve(rawCookiesFile);
+const rawPlayerClient = optionalEnv('YTDLP_PLAYER_CLIENT', '');
+const ytdlpPlayerClient = rawPlayerClient === '' ? undefined : rawPlayerClient;
+
 export const config: AppConfig = {
   port: parseNumber('PORT', optionalEnv('PORT', '3000')),
   cloudinary: {
@@ -93,4 +118,8 @@ export const config: AppConfig = {
   maxFileSizeMb,
   maxFileSizeBytes: maxFileSizeMb * 1024 * 1024,
   defaultAudioFormat,
+  ytdlp: {
+    cookiesFile: ytdlpCookiesFile,
+    playerClient: ytdlpPlayerClient,
+  },
 };

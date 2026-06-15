@@ -3,6 +3,7 @@ import youtubeDl from 'youtube-dl-exec';
 import { IExtractorService, MediaInfo } from '../types/api.types';
 import { ApiError } from '../middlewares/error.middleware';
 import { logger } from '../utils/logger';
+import { config } from '../config/env';
 
 /**
  * Subset of the yt-dlp JSON payload that this extractor relies on.
@@ -105,16 +106,29 @@ export class ExtractorService implements IExtractorService {
    * supplied format selector.
    */
   private async resolveWithYtDlp(url: string, formatSelector: string): Promise<MediaInfo> {
+    // Base flags, plus optional auth/anti-bot flags pulled from config.
+    // `cookies` is the reliable way past YouTube's "confirm you're not a bot"
+    // wall on datacenter IPs; `extractorArgs` lets a specific player client be
+    // forced as a fallback. Both are omitted entirely when not configured.
+    const options: Record<string, unknown> = {
+      dumpSingleJson: true,
+      noWarnings: true,
+      noPlaylist: true,
+      noCheckCertificates: true,
+      preferFreeFormats: true,
+      format: formatSelector,
+    };
+
+    if (config.ytdlp.cookiesFile !== undefined) {
+      options.cookies = config.ytdlp.cookiesFile;
+    }
+    if (config.ytdlp.playerClient !== undefined) {
+      options.extractorArgs = `youtube:player_client=${config.ytdlp.playerClient}`;
+    }
+
     let info: YtDlpInfo;
     try {
-      info = (await youtubeDl(url, {
-        dumpSingleJson: true,
-        noWarnings: true,
-        noPlaylist: true,
-        noCheckCertificates: true,
-        preferFreeFormats: true,
-        format: formatSelector,
-      })) as unknown as YtDlpInfo;
+      info = (await youtubeDl(url, options)) as unknown as YtDlpInfo;
     } catch (error) {
       logger.error('yt-dlp extraction failed', error);
       throw new ApiError(
