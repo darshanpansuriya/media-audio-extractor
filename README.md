@@ -119,7 +119,19 @@ Client → POST /api/video
 
 ## Installation
 
-Requires **Node.js 22+**.
+Requires **Node.js 22+** and **ffmpeg**.
+
+> **ffmpeg is required at runtime.** YouTube (and increasingly other sites) no
+> longer serve a single file containing both video and audio — yt-dlp downloads
+> the streams separately and uses ffmpeg to merge them. Without ffmpeg, those
+> downloads fail. Install it:
+>
+> ```bash
+> # Ubuntu/Debian
+> sudo apt-get install -y ffmpeg
+> # macOS (Homebrew)
+> brew install ffmpeg
+> ```
 
 ```bash
 # Clone / enter the project
@@ -149,6 +161,8 @@ cp .env.example .env
 | `CLOUDINARY_API_SECRET`  | **yes**  | —        | Cloudinary API secret.                   |
 | `TEMP_DIRECTORY`         | no       | `./temp` | Directory for transient downloads.       |
 | `MAX_FILE_SIZE_MB`       | no       | `500`    | Maximum allowed media size (megabytes).  |
+| `YTDLP_COOKIES_FILE`     | no       | —        | Path to a Netscape `cookies.txt`; needed to get past YouTube's bot check on server IPs. |
+| `YTDLP_PLAYER_CLIENT`    | no       | —        | Optional yt-dlp `youtube:player_client` override (e.g. `web_safari`). Fallback when cookies aren't used. |
 
 The app validates these at startup and exits with a clear error if a required
 value is missing.
@@ -340,12 +354,15 @@ only on the interface.
 
 ## Deployment (Ubuntu VPS + PM2 + Nginx)
 
-### 1. Install Node.js 22 and PM2
+### 1. Install Node.js 22, ffmpeg, and PM2
 
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
-sudo apt-get install -y nodejs
+sudo apt-get install -y nodejs ffmpeg
 sudo npm install -g pm2
+
+# Verify ffmpeg is on PATH (required to merge video + audio):
+ffmpeg -version
 ```
 
 ### 2. Deploy the app

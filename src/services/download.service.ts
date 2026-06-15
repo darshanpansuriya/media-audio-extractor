@@ -44,9 +44,7 @@ export class DownloadService {
    *   5. Return the public Cloudinary URL.
    */
   public async process(input: DownloadInput): Promise<DownloadResult> {
-    const mediaInfo = await this.extractor.getMediaInfo(input.url);
-
-    const tempFilePath = await this.downloadToTemp(mediaInfo);
+    const tempFilePath = await this.fetchVideoToTemp(input.url);
 
     try {
       const upload = await this.cloudinary.uploadVideo(tempFilePath);
@@ -74,9 +72,10 @@ export class DownloadService {
    *      format — so the caller can switch formats without re-uploading.
    */
   public async processAudio(input: AudioInput): Promise<AudioResult> {
-    const mediaInfo = await this.extractor.getAudioInfo(input.url);
-
-    const tempFilePath = await this.downloadToTemp(mediaInfo);
+    const { filePath: tempFilePath } = await this.extractor.downloadAudio(
+      input.url,
+      config.tempDirectory
+    );
 
     try {
       const upload = await this.cloudinary.uploadAudio(tempFilePath);
@@ -105,14 +104,33 @@ export class DownloadService {
   }
 
   /**
-   * Stream the media referenced by {@link MediaInfo} into a unique temp file.
+   * Obtain a local temp file for a video request.
+   *
+   * Direct media URLs (a CDN link straight to an .mp4 etc.) are streamed with
+   * the size-guarded HTTP path. Everything else (YouTube, TikTok, …) goes
+   * through yt-dlp, which merges separate video/audio streams into one file.
+   *
+   * @returns Absolute path to the downloaded temp file.
+   */
+  private async fetchVideoToTemp(url: string): Promise<string> {
+    const direct = this.extractor.resolveDirect(url);
+    if (direct !== null) {
+      return this.streamDirectToTemp(direct);
+    }
+
+    const { filePath } = await this.extractor.downloadVideo(url, config.tempDirectory);
+    return filePath;
+  }
+
+  /**
+   * Stream a directly-downloadable media URL into a unique temp file.
    *
    * The download is size-guarded: it aborts if the stream exceeds the
    * configured maximum file size.
    *
    * @returns Absolute path to the downloaded temp file.
    */
-  private async downloadToTemp(mediaInfo: MediaInfo): Promise<string> {
+  private async streamDirectToTemp(mediaInfo: MediaInfo): Promise<string> {
     await fs.ensureDir(config.tempDirectory);
 
     const extension = path.extname(mediaInfo.filename) || '.mp4';

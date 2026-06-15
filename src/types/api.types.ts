@@ -91,6 +91,18 @@ export interface MediaInfo {
 }
 
 /**
+ * A media file that an extractor has already downloaded to local disk
+ * (e.g. via yt-dlp, which merges separate video/audio streams). The caller
+ * is responsible for uploading and then removing the file.
+ */
+export interface DownloadedFile {
+  /** Absolute path to the downloaded file on local disk. */
+  filePath: string;
+  /** The file's name (including extension). */
+  filename: string;
+}
+
+/**
  * Result of a successful Cloudinary upload.
  */
 export interface CloudinaryUploadResult {
@@ -131,11 +143,23 @@ export interface AudioResult {
  * later without touching the business logic.
  */
 export interface IExtractorService {
-  getMediaInfo(url: string): Promise<MediaInfo>;
   /**
-   * Resolve a source URL into a directly-downloadable *audio-only* stream
-   * (best available bitrate). Format conversion is handled downstream at
-   * delivery time, so the returned stream is whatever the source provides.
+   * Fast path for URLs that already point straight at a media file: returns
+   * the info needed to stream it directly. Returns `null` when the URL needs
+   * full extraction (e.g. a YouTube/TikTok page), in which case the caller
+   * should use {@link downloadVideo} / {@link downloadAudio}.
    */
-  getAudioInfo(url: string): Promise<MediaInfo>;
+  resolveDirect(url: string): MediaInfo | null;
+  /**
+   * Download a video into `outputDir`, merging YouTube's now-separate video
+   * and audio streams into a single file (requires ffmpeg). Returns the path
+   * to the finished local file.
+   */
+  downloadVideo(url: string, outputDir: string): Promise<DownloadedFile>;
+  /**
+   * Download the best available *audio-only* stream into `outputDir`. Format
+   * conversion is handled downstream at delivery time, so the returned file is
+   * whatever container the source provides. Returns the local file path.
+   */
+  downloadAudio(url: string, outputDir: string): Promise<DownloadedFile>;
 }

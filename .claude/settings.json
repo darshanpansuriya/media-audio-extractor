@@ -11,7 +11,9 @@
       "PowerShell(npx prettier \"src/utils/validator.ts\" | git --no-pager diff --no-index \"src/utils/validator.ts\" - 2>$null; if \\(-not $?\\) { npx prettier \"src/utils/validator.ts\" > \"$env:TEMP\\\\val.ts\"; Compare-Object \\(Get-Content \"src/utils/validator.ts\"\\) \\(Get-Content \"$env:TEMP\\\\val.ts\"\\) })",
       "Bash(node -e \"const {create}=require\\('youtube-dl-exec'\\); require\\('youtube-dl-exec'\\).version ? console.log\\('v', require\\('youtube-dl-exec'\\).version\\) : 0\")",
       "Bash(./node_modules/youtube-dl-exec/bin/yt-dlp --version)",
-      "Bash(node_modules/.bin/yt-dlp --version)"
+      "Bash(node_modules/.bin/yt-dlp --version)",
+      "Bash(ffmpeg -version)",
+      "Bash(./node_modules/youtube-dl-exec/bin/yt-dlp.exe -f \"bv*[height<=1080]+ba/b[height<=1080]/bv*+ba/b\" --no-playlist --simulate --no-warnings -o \"%\\(title\\)s.%\\(ext\\)s\" \"https://youtu.be/AGUJkurb1GA\")"
     ]
   }
 }
